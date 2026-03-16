@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import User from '../models/user.js';
 
 // Protect routes - verify JWT token
 // eslint-disable-next-line no-undef
