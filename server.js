@@ -20,7 +20,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://food-delivery-frontend-auzouhq9d-mildreds-projects-dcb69d0a.vercel.app/',
+  credentials: true
+}));
 app.use(json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
