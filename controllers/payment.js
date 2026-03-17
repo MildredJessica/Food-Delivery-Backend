@@ -1,6 +1,7 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable no-undef */
 import asyncHandler from 'express-async-handler';
+import axios from 'axios';
 import Order from '../models/orders.js';
 import PaystackService from '../src/services/paystack.js';
 
@@ -89,9 +90,9 @@ export const createVirtualCard = asyncHandler(async (req, res) => {
 // Verify Paystack payment
 export const verifyPaymentIntent = asyncHandler(async (req, res) => {
     try {
-      console.log("reference is ", reference)
-      console.log('User ID:', req.user.id);
       const { reference } = req.params;
+      console.log("reference is ", reference);
+      console.log('User ID:', req.user.id);
       const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
       if (!PAYSTACK_SECRET_KEY) {
             console.error('PAYSTACK_SECRET_KEY is not set');
@@ -154,7 +155,7 @@ export const verifyPaymentIntent = asyncHandler(async (req, res) => {
         // Update order status
         order.paymentStatus = 'paid';
           order.paymentReference = reference;
-          order.amount = response.data.data.amount;
+          order.amount = result.data.data.amount;
           order.paymentMethod = 'card';
           order.status = 'confirmed';
           await order.save();
@@ -181,17 +182,17 @@ export const verifyPaymentIntent = asyncHandler(async (req, res) => {
               message: 'Payment verified but order not found. Please contact support.',
               data: {
                 reference: reference,
-                amount: response.data.data.amount / 100,
+                amount: result.data.data.amount / 100,
                 status: 'verified'
               }
             });                
         }
       } else {
-          console.log('Payment verification failed:', response.data);
+          console.log('Payment verification failed:', result.data);
           return res.status(400).json({
             success: false,
             message: 'Payment verification failed',
-            data: response.data
+            data: result.data
           });
       }
     } catch (error) {
@@ -265,7 +266,7 @@ export const handlePaystackWebhook = asyncHandler(async (req, res) => {
         const paymentData = event.data;
 
         // Verify payment and update order status
-        const result = await PaystackService.handlePaystackWebhook(reference);
+        const result = await PaystackService.handlePaystackWebhook(paymentData.reference);
 
         if (result.success) {
           const order = await Order.findOneAndUpdate(

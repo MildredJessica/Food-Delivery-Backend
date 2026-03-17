@@ -72,10 +72,15 @@ class PaystackService {
     return this.verifyPayment(reference);
   }
 
+  // Handle Paystack webhook (verifies payment by reference)
+  async handlePaystackWebhook(reference) {
+    return this.verifyPayment(reference);
+  }
+
   // Verify payment
   async verifyPayment(reference) {
     try {
-      console.log('Verifying payment reference:', baseUrl);
+      console.log('Verifying payment reference:', this.baseUrl);
       const response = await axios.get(
         `${this.baseUrl}/transaction/verify/${reference}`,
         {
