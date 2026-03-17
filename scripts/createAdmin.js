@@ -2,7 +2,7 @@
 import {config}  from "dotenv";
 import mongoose from 'mongoose';
 import { connectDB } from '../config/db.js';
-import User from '../models/User.js';
+import User from '../models/user.js';
 
 config();
 connectDB();

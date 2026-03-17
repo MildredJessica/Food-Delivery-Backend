@@ -19,8 +19,16 @@ const app = express();
 // eslint-disable-next-line no-undef
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+// Middleware - allow all CORS
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: '*',
+}));
+app.use((req, res, next) => {
+  req.url = req.url.replace(/\/+/g, '/') || '/';
+  next();
+});
 app.use(json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
