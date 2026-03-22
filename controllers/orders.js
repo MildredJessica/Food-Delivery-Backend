@@ -165,3 +165,35 @@ export const updateOrder = asyncHandler(async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+// Get my orders
+export const getMyOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({ user: req.user._id })
+    .populate('restaurant', 'name image')
+    .sort('-createdAt');
+  res.json({ success: true, orders });
+});
+
+// Get restaurant owner orders
+export const getRestaurantOwnerOrders = asyncHandler(async (req, res) => {
+  // Find all restaurants owned by the current user
+  const restaurants = await Restaurant.find({ owner: req.user._id });
+  const restaurantIds = restaurants.map(r => r._id);
+  
+  // Find all orders for these restaurants
+  const orders = await Order.find({ restaurant: { $in: restaurantIds } })
+    .populate('restaurant', 'name image')
+    .populate('user', 'name email')
+    .sort('-createdAt');
+    
+  res.json({ success: true, orders });
+});
+
+// Get all orders (admin)
+export const getAllOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({})
+    .populate('restaurant', 'name image')
+    .populate('user', 'name email')
+    .sort('-createdAt');
+  res.json({ success: true, orders });
+});
